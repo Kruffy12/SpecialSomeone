@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For You ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #f7b2c4;
+  --pink-dark: #e98aa6;
+  --red: #f06a6a;
+  --paper: #fff6f9;
+  --shadow: rgba(0,0,0,0.15);
+}
+
+* { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ffe4ec, #ffd1dc);
+  overflow: hidden;
+}
+
+.stage { width: min(90vw, 340px); position: relative; }
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+  text-align: center;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  position: relative;
+  pointer-events: auto;
+}
+
+.slide img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: transform 0.5s ease;
+}
+
+.slide img.enlarged { transform: scale(1.2); }
+
+.slide p { margin-top: 0.6rem; font-size: 0.95rem; color: #b03a5b; }
+
+.envelope {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  background: var(--pink);
+  box-shadow: 0 12px 30px var(--shadow);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--pink-dark);
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  transform-origin: top;
+  transition: transform 0.8s ease;
+  z-index: 4;
+}
+
+.envelope.open .flap { transform: rotateX(180deg); }
+
+.paper {
+  position: absolute;
+  bottom: 8%;
+  left: 5%;
+  width: 90%;
+  height: 85%;
+  background: var(--paper);
+  border-radius: 8px;
+  padding: 1.2rem 1rem;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 1s ease, opacity 0.6s ease;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.envelope.open .paper { transform: translateY(0%); opacity: 1; }
+
+.paper h2 { margin: 0 0 0.5rem 0; font-size: 1.2rem; color: #b03a5b; font-weight: 700; }
+.paper p { font-size: clamp(0.9rem, 3.5vw, 1.1rem); color: #b03a5b; line-height: 1.5; margin: 0.3rem 0; }
+.paper .sincerely { align-self: flex-end; margin-top: 1rem; font-weight: 500; }
+
+.arrow {
+  position: absolute;
+  top: 45%;
+  right: -12px;
+  background: rgba(255,255,255,0.7);
+  border: none;
+  font-size: 1.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.dots { margin-top: 0.6rem; display: flex; justify-content: center; gap: 0.4rem; }
+.dot { width: 8px; height: 8px; background: #f2a2b8; border-radius: 50%; opacity: 0.4; }
+.dot.active { opacity: 1; background: #e46a8a; }
+
+.text-box {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  height: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  padding: 1rem;
+  transition: right 0.5s ease;
+}
+.text-box.active { right: 0; }
+
+#muteBtn {
+  position: fixed;
+  bottom: 1rem;  /* move to bottom */
+  left: 1rem;    /* move to left */
+  padding: 0.5rem 1rem;
+  background-color: var(--pink);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 999;
+}
+</style>
+</head>
+<body>
+
+<!-- Background music (no autoplay, will play on click) -->
+<audio id="bgMusic" src="bg.mp3" loop></audio>
+<audio id="blip" src="type-blip.mp3"></audio>
+
+<button id="muteBtn">Mute</button>
+
+<div class="stage">
+  <!-- Slide 0: Envelope -->
+  <div class="slide active" id="slide0">
+    <div class="envelope" id="envelope" onclick="toggleEnvelope()">
+      <div class="flap"></div>
+      <div class="paper">
+        <h2>Dear Bryssa,</h2>
+        <p>I know this isn't much of a gift, but I put a lot of time into it, and it's a gift from me to you! Here's a couple of things that happened between us this year. I really hope you enjoy it. Made with Love!</p>
+        <p class="sincerely">Sincerely,<br>Ericson Chee ❤️</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memory slides -->
+  <div class="slide" id="slide1">
+    <img src="image1.png" alt="Memory 1">
+    <p>Our first favorite memory ❤️</p>
+  </div>
+  <div class="slide" id="slide2">
+    <img src="image2.png" alt="Memory 2">
+    <p>A moment I’ll never forget ✨</p>
+  </div>
+  <div class="slide" id="slide3">
+    <img src="image3.png" alt="Memory 3">
+    <p>Just us, being us 💕</p>
+  </div>
+
+  <button class="arrow" onclick="nextSlide()">➜</button>
+  <div class="dots" id="dots"></div>
+
+  <div class="acknowledge-container" style="margin-top: 1rem; text-align: center;">
+    <button id="ackBtn" onclick="acknowledge()" style="
+      padding: 0.5rem 1rem;
+      background-color: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    ">Acknowledge</button>
+  </div>
+</div>
+
+<!-- Text box for typewriter effect -->
+<div class="text-box" id="textBox">
+  <p id="text"></p>
+</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const dotsContainer = document.getElementById('dots');
+const blip = document.getElementById('blip');
+const bgMusic = document.getElementById('bgMusic'); 
+bgMusic.volume = 0.3;
+const muteBtn = document.getElementById('muteBtn');
+
+// Create dots
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dotsContainer.appendChild(dot);
+});
+
+function toggleEnvelope() {
+  const envelope = document.getElementById('envelope');
+  envelope.classList.add('open');
+
+  // Start music on first click
+  if (bgMusic.paused) {
+    bgMusic.play().catch(e => console.log("Music autoplay blocked until user interacts"));
+    
+  }
+}
+
+function nextSlide() {
+  slides[currentSlide].classList.remove('active');
+  dotsContainer.children[currentSlide].classList.remove('active');
+
+  currentSlide = (currentSlide + 1) % slides.length;
+  slides[currentSlide].classList.add('active');
+  dotsContainer.children[currentSlide].classList.add('active');
+}
+
+const messages = [
+  "", // Slide 0 (envelope) has no message on acknowledgement
+  "Our First Encounter (Sept. 3, 2025): I remembered it like it was yesterday, I was just finished doing a physics work.. and I decided to post it on instagram. Little did I know, that post would lead me to you. Although I initially thought you were just a curious person that would ask one quesiton and leave.. we began talking consistently shortly after.",
+  "The First Time You Said You Loved Me (Oct. 5, 2025): I was so nervous, at the time I didn't think you meant it literally, but as time went on I realized you truly did, and that was better than anything else i've experienced in the year.",
+  "Us Now (Dec. 25, 2025): Now? We're unstoppable. I love you so much Bryssa, and I can't wait to see what the future holds for us. Thank you for being you, and for loving me the way you do. I could never find someone who's ever treated me the way you have, and I am forever grateful that you see me for who I am.",
+];
+
+function acknowledge() {
+  const currentImg = slides[currentSlide].querySelector('img');
+  if (!currentImg) return;
+
+  currentImg.classList.add('enlarged');
+
+  const textBox = document.getElementById('textBox');
+  textBox.style.display = 'block';
+  setTimeout(() => {
+    textBox.classList.add('active');
+    typeText(messages[currentSlide]); // use slide-specific message
+  }, 100);
+}
+
+
+function typeText(message) {
+  const textElement = document.getElementById('text');
+  textElement.textContent = '';
+  let i = 0;
+  function type() {
+    if (i < message.length) {
+      textElement.textContent += message.charAt(i);
+      blip.currentTime = 0;
+      blip.play().catch(()=>{});
+      i++;
+      setTimeout(type, 50);
+    }
+  }
+  type();
+}
+
+// Mute/unmute button
+muteBtn.addEventListener('click', () => {
+  bgMusic.muted = !bgMusic.muted;
+  muteBtn.textContent = bgMusic.muted ? "Unmute" : "Mute";
+});
+</script>
+
+</body>
+</html>
